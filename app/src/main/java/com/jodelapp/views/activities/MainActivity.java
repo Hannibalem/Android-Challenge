@@ -1,13 +1,16 @@
 package com.jodelapp.views.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.jodelapp.App;
-import com.jodelapp.AppComponent;
+import com.jodelapp.DaggerDependencies;
 import com.jodelapp.R;
+import com.jodelapp.features.photos.presentation.UserPhotoListFragment;
 import com.jodelapp.features.todos.presentation.UserTodoListView;
+import com.jodelapp.features.users.presentation.UserUserListFragment;
 
 import javax.inject.Inject;
 
@@ -23,25 +26,36 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
     @BindView(R.id.tb_app)
     Toolbar tbApp;
 
-    private MainActivityComponent scopeGraph;
+    @BindView(R.id.navigator)
+    BottomNavigationView navigator;
 
     @Override
-    public void loadToDoPage() {
+    public void loadPage(final int id) {
+        final Fragment fragment;
+        switch (id) {
+            case R.id.action_photos:
+                fragment = UserPhotoListFragment.getInstance();
+                break;
+            case R.id.action_tasks:
+                fragment = UserTodoListView.getInstance();
+                break;
+            default:
+                fragment = UserUserListFragment.Companion.getInstance();
+                break;
+        }
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.v_container, UserTodoListView.getInstance())
-                .commit();
+                                   .replace(R.id.v_container, fragment)
+                                   .commit();
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setupScopeGraph(App.get(this).getAppComponent());
+        DaggerDependencies.Companion.inject(this);
         initViews();
-        presenter.onCreate();
+        presenter.onCreate(savedInstanceState);
     }
-
 
     @Override
     public void onDestroy() {
@@ -49,18 +63,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityContr
         presenter.onDestroy();
     }
 
-
-    private void setupScopeGraph(AppComponent appComponent) {
-        scopeGraph = DaggerMainActivityComponent.builder()
-                .appComponent(appComponent)
-                .mainActivityModule(new MainActivityModule(this))
-                .build();
-        scopeGraph.inject(this);
-    }
-
     private void initViews() {
         ButterKnife.bind(this);
         setSupportActionBar(tbApp);
+        setNavigator();
     }
 
+    private void setNavigator() {
+        navigator.setOnNavigationItemSelectedListener(item -> {
+            presenter.onLoadPage(item.getItemId());
+            return true;
+        });
+    }
 }

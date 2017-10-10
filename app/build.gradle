@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 25
@@ -48,6 +50,9 @@ android {
     configurations.all {
         resolutionStrategy.force 'com.google.code.findbugs:jsr305:2.0.1'
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -78,6 +83,8 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
     annotationProcessor "com.jakewharton:butterknife-compiler:${butterknifeVersion}"
@@ -86,10 +93,20 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:1.9.5"
     testCompile 'org.assertj:assertj-core:3.5.2'
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile "com.nhaarman:mockito-kotlin:1.5.0"
 
     // UI Tests
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    kapt "com.google.dagger:dagger-compiler:${daggerVersion}"
+    kapt "com.android.databinding:compiler:2.4.0-alpha7"
+    kapt "com.jakewharton:butterknife-compiler:${butterknifeVersion}"
+}
+repositories {
+    mavenCentral()
 }

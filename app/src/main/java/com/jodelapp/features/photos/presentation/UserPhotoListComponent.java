@@ -10,6 +10,5 @@ import dagger.Component;
 @Component(dependencies = AppComponent.class, modules = {UserPhotoListModule.class, UserPhotoListUseCaseModule.class})
 public interface UserPhotoListComponent {
 
-    void inject(UserPhotoListView view);
-
+    void inject(UserPhotoListFragment fragment);
 }

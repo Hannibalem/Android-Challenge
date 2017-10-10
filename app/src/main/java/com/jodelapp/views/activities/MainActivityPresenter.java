@@ -1,11 +1,9 @@
 package com.jodelapp.views.activities;
 
-import com.jodelapp.utilities.StringUtils;
+import android.os.Bundle;
+
 import com.jodelapp.utilities.rx.RxDisposableFactory;
 import com.jodelapp.utilities.rx.RxDisposables;
-import com.jodelapp.utilities.rx.ThreadTransformer;
-
-import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -13,10 +11,9 @@ public final class MainActivityPresenter implements MainActivityContract.Present
 
     private final MainActivityContract.View view;
     private final RxDisposables disposables;
-
+    private final int NONE_ID = 0;
     @Inject
     public MainActivityPresenter(MainActivityContract.View view,
-                                 ThreadTransformer threadTransformer,
                                  RxDisposableFactory rxDisposableFactory) {
         this.view = view;
         this.disposables = rxDisposableFactory.get();
@@ -24,14 +21,19 @@ public final class MainActivityPresenter implements MainActivityContract.Present
 
 
     @Override
-    public void onCreate() {
-        view.loadToDoPage();
+    public void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            view.loadPage(NONE_ID);
+        }
+    }
+
+    @Override
+    public void onLoadPage(final int id) {
+        view.loadPage(id);
     }
 
     @Override
     public void onDestroy() {
         disposables.clear();
     }
-
-
 }

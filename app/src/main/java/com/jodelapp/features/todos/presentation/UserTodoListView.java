@@ -9,8 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jodelapp.App;
-import com.jodelapp.AppComponent;
+import com.jodelapp.DaggerDependencies;
 import com.jodelapp.R;
 import com.jodelapp.features.todos.models.TodoPresentationModel;
 
@@ -30,7 +29,6 @@ public class UserTodoListView extends Fragment implements UserTodoListContract.V
     @BindView(R.id.ls_user_todos)
     RecyclerView lsUserToDos;
 
-    private UserTodoListComponent scopeGraph;
     private Unbinder unbinder;
 
     public static UserTodoListView getInstance() {
@@ -41,7 +39,7 @@ public class UserTodoListView extends Fragment implements UserTodoListContract.V
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_todos, container, false);
-        setupScopeGraph(App.get(getActivity()).getAppComponent());
+        DaggerDependencies.Companion.inject(this);
         unbinder = ButterKnife.bind(this, view);
         initViews();
         return view;
@@ -71,14 +69,5 @@ public class UserTodoListView extends Fragment implements UserTodoListContract.V
     private void initViews() {
         lsUserToDos.setLayoutManager(new LinearLayoutManager(getActivity()));
         lsUserToDos.setHasFixedSize(true);
-    }
-
-
-    private void setupScopeGraph(AppComponent appComponent) {
-        scopeGraph = DaggerUserTodoListComponent.builder()
-                .appComponent(appComponent)
-                .userTodoListModule(new UserTodoListModule(this))
-                .build();
-        scopeGraph.inject(this);
     }
 }

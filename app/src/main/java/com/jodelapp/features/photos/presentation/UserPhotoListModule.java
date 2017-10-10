@@ -1,25 +1,18 @@
 package com.jodelapp.features.photos.presentation;
 
 
+import com.jodelapp.data.managers.CurrentUserManager;
+import com.jodelapp.features.photos.usecases.GetPhotoListUseCase;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public class UserPhotoListModule {
 
-    private final UserPhotoListContract.View view;
-
-    public UserPhotoListModule(UserPhotoListContract.View view) {
-        this.view = view;
-    }
-
     @Provides
-    public UserPhotoListContract.View provideView() {
-        return this.view;
-    }
-
-    @Provides
-    public UserPhotoListContract.Presenter providePresenter(UserPhotoListPresenter presenter) {
-        return presenter;
+    PhotoListViewModel provideViewModel(final CurrentUserManager currentUserManager,
+                                        final GetPhotoListUseCase useCase) {
+        return new PhotoListViewModel(currentUserManager, useCase);
     }
 }
